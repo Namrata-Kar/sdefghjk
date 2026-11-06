@@ -27,7 +27,7 @@ const transporter = nodemailer.createTransport({
 
 // Email configuration
 const SENDER_EMAIL = "namratakar001@gmail.com";
-const RECEIVER_EMAIL = "dattaaditya005@gmail.com";
+const RECEIVER_EMAIL = "namratakar001@gmail.com";
 
 // Prevent repeated emails spamming
 let alertSent = false;
@@ -77,8 +77,8 @@ app.post("/api/temperature", async (req, res) => {
         if (hasAnyAlert) {
             if (!alertSent) {
                 const mailOptions = {
-                    from: SENDER_EMAIL,
-                    to: RECEIVER_EMAIL,
+                    from: 'namratakar001@gmail.com',
+                    to: 'namratakar001@gmail.com',
                     subject: "⚠️ WATER QUALITY WARNING: Parameter Out of Range!",
                     text: `
 WARNING! One or more water parameters have exceeded acceptable limits.
