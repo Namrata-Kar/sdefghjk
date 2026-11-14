@@ -31,14 +31,41 @@ const RECEIVER_EMAIL = "namratakar001@gmail.com";
 
 // Prevent repeated emails spamming
 let alertSent = false;
+const SENSOR_TIMEOUT_MS = 30 * 1000;
+let lastPayloadReceivedAt = null;
 
 // Global state to store the latest sensor readings for the mobile app GET request
 let latestSensorData = {
     temperature: 0,
     pH: 0,
     tds: 0,
-    alert: false
+    alert: false,
+    connected: false
 };
+
+function resetSensorState() {
+    latestSensorData = {
+        temperature: 0,
+        pH: 0,
+        tds: 0,
+        alert: false,
+        connected: false,
+        lastReceivedAt: null
+    };
+    lastPayloadReceivedAt = null;
+    console.log("Sensor disconnected: no payload received for 30 seconds.");
+}
+
+function checkSensorTimeout() {
+    if (!lastPayloadReceivedAt) {
+        return;
+    }
+
+    const now = Date.now();
+    if (now - lastPayloadReceivedAt > SENSOR_TIMEOUT_MS) {
+        resetSensorState();
+    }
+}
 
 // Sensor Data API Endpoint (Receives data from ESP32)
 app.post("/api/temperature", async (req, res) => {
@@ -67,11 +94,14 @@ app.post("/api/temperature", async (req, res) => {
         const hasAnyAlert = isTempOutOfRange || isPhOutOfRange || isTdsOutOfRange;
 
         // Update global state so mobile app can fetch it instantly
+        lastPayloadReceivedAt = Date.now();
         latestSensorData = {
             temperature: temperature,
             pH: pH,
             tds: tds,
-            alert: hasAnyAlert
+            alert: hasAnyAlert,
+            connected: true,
+            lastReceivedAt: new Date(lastPayloadReceivedAt).toISOString()
         };
 
         if (hasAnyAlert) {
@@ -110,7 +140,8 @@ Please inspect your water monitoring system immediately.
             temperature: temperature,
             pH: pH,
             tds: tds,
-            alert: hasAnyAlert
+            alert: hasAnyAlert,
+            connected: true
         });
 
     } catch (error) {
@@ -124,6 +155,7 @@ Please inspect your water monitoring system immediately.
 
 // GET Endpoint for Mobile App to fetch latest live data
 app.get("/api/temperature", (req, res) => {
+    checkSensorTimeout();
     return res.status(200).json(latestSensorData);
 });
 
@@ -131,6 +163,8 @@ app.get("/api/temperature", (req, res) => {
 app.get("/", (req, res) => {
     res.send("Water Quality Monitoring Server is Running!");
 });
+
+setInterval(checkSensorTimeout, 5000);
 
 app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running on port ${PORT}`);
