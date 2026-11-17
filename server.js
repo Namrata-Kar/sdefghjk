@@ -1,18 +1,20 @@
 const express = require("express");
 const nodemailer = require("nodemailer");
+const chatbotRoutes = require("./chatbot");
 
 const app = express();
 
 app.use(express.json());
+app.use(chatbotRoutes);
 
 // Cloud hosting providers like Render dynamically assign a port using process.env.PORT
 const PORT = process.env.PORT || 8080;
 
 // Safe Ranges Definition
-const TEMP_MIN = 25;
+const TEMP_MIN = 26;
 const TEMP_MAX = 32;
 const PH_MIN = 6.5;
-const PH_MAX = 9.0;
+const PH_MAX = 8.5;
 const TDS_MIN = 100;
 const TDS_MAX = 500;
 
