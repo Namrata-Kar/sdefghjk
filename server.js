@@ -23,13 +23,13 @@ const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
         user: "namratakar001@gmail.com",
-        pass: "okte ylnc ohqg bvaq"
+        pass: "okte ylnc ohqg bvaqs"
     }
 });
 
 // Email configuration
 const SENDER_EMAIL = "namratakar001@gmail.com";
-const RECEIVER_EMAIL = "namratakar001@gmail.com";
+const RECEIVER_EMAIL = "dattaaditya005@gmail.com";
 
 // Prevent repeated emails spamming
 let alertSent = false;
@@ -110,7 +110,7 @@ app.post("/api/temperature", async (req, res) => {
             if (!alertSent) {
                 const mailOptions = {
                     from: 'namratakar001@gmail.com',
-                    to: 'namratakar001@gmail.com',
+                    to: 'dattaaditya005@gmail.com',
                     subject: "⚠️ WATER QUALITY WARNING: Parameter Out of Range!",
                     text: `
 WARNING! One or more water parameters have exceeded acceptable limits.
